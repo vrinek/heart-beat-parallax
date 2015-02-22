@@ -6,16 +6,14 @@ public class ChangeOnBeat : MonoBehaviour {
 	public int beatDistance = 20; // frames
 
 	private int counter;
-	private int currentStateIndex = -1; // will become 0 when initialized
-	private int beatOffset;
+	private int currentStateIndex = -1; // Will become 0 by AdvanceState() when this object is initialized.
 	private int maxLayer = 9;
 
 	void Start() {
-		// greater sortingLayerID is closer to the foreground
+		// Greater sortingLayerID is closer to the foreground, rendered last.
 		int layerOffset = maxLayer - gameObject.renderer.sortingLayerID;
-		beatOffset = layerOffset * 5;
+		counter = layerOffset * 5;
 
-		counter = beatOffset;
 		AdvanceState();
 	}
 

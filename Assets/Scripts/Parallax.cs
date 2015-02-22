@@ -2,42 +2,38 @@
 using System.Collections;
 
 public class Parallax : MonoBehaviour {
-//	public Camera myCamera;
-
 	private Vector2 originalPosition;
-	private float beatOffset;
 	private int maxLayer = 9;
-	private float maxLayerFloat = 9.0f;
+	private float maxScale = 1.5f;
+
+	// How much the object is going to follow the camera.
+	// Ranges from 0 when close to the foreground to 1 when far in the background.
+	private float followRatio;
 
 	private Vector2 cameraOffsetPosition {
 		get {
 			return new Vector2(
-				myCamera.transform.position.x - originalPosition.x,
-				myCamera.transform.position.y - originalPosition.y
+				Camera.main.transform.position.x - originalPosition.x,
+				Camera.main.transform.position.y - originalPosition.y
 			);
 		}
 	}
 
-	private Camera myCamera {
-		get { return Camera.main; }
-	}
-
-	// Use this for initialization
 	void Start () {
-		// greater sortingLayerID is closer to the foreground
-		int layerOffset = maxLayer - gameObject.renderer.sortingLayerID;
-		beatOffset = layerOffset / maxLayerFloat;
-
 		originalPosition = gameObject.transform.position;
+		
+		// Greater sortingLayerID is closer to the foreground, rendered last.
+		int layerOffset = maxLayer - gameObject.renderer.sortingLayerID;
+		followRatio = layerOffset / (float)maxLayer;
 
-		gameObject.transform.localScale *= (1.5f - layerOffset/maxLayerFloat);
+		// Resize the object to look closer or far away from the camera.
+		gameObject.transform.localScale *= (maxScale - followRatio);
 	}
 	
-	// Update is called once per frame
 	void Update () {
 		gameObject.transform.position = new Vector3(
-			originalPosition.x + cameraOffsetPosition.x * beatOffset,
-			originalPosition.y + cameraOffsetPosition.y * beatOffset,
+			originalPosition.x + cameraOffsetPosition.x * followRatio,
+			originalPosition.y + cameraOffsetPosition.y * followRatio,
 			gameObject.transform.position.z
 		);
 	}
